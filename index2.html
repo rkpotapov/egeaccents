@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Тренажёр ударений · ЕГЭ 2026</title>
+<style>
+  :root {
+    --bg: #090d16;
+    --card-bg: rgba(19, 27, 46, 0.75);
+    --card-border: rgba(255, 255, 255, 0.08);
+    --line: rgba(255, 255, 255, 0.1);
+    --txt: #f1f5f9;
+    --muted: #94a3b8;
+    --accent: #6366f1;
+    --accent-glow: rgba(99, 102, 241, 0.35);
+    --good: #10b981;
+    --good-bg: rgba(16, 185, 129, 0.15);
+    --bad: #f43f5e;
+    --bad-bg: rgba(244, 63, 94, 0.15);
+    --amber: #f59e0b;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background:
+      radial-gradient(1000px 600px at 15% -10%, #1e1b4b 0%, transparent 60%),
+      radial-gradient(800px 500px at 85% 110%, #31103f 0%, transparent 50%),
+      var(--bg);
+    color: var(--txt);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 24px 16px 48px;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 680px;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 18px var(--accent);
+  }
+
+  h1 {
+    font-size: 20px;
+    margin: 0;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .sub {
+    margin: 2px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .btn-icon {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    padding: 8px 14px;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+  .btn-icon:hover {
+    color: var(--txt);
+    border-color: var(--accent);
+    background: rgba(99, 102, 241, 0.1);
+  }
+
+  /* Stats Dashboard */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(12px);
+    border-radius: 14px;
+    padding: 10px;
+    text-align: center;
+  }
+
+  .stat-card b {
+    display: block;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .stat-card span {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .progress-wrap {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .progress-bar {
+    height: 100%;
+    width: 0%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, var(--accent), var(--good));
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Main Card Containers */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(16px);
+    border-radius: 24px;
+    padding: 32px 28px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* View Panels */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* Setup Screen */
+  .setup-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 6px;
+    text-align: center;
+  }
+  .setup-desc {
+    color: var(--muted);
+    font-size: 14px;
+    text-align: center;
+    margin: 0 0 24px;
+  }
+
+  .section-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .mode-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  @media(max-width: 480px) {
+    .mode-grid { grid-template-columns: 1fr; }
+  }
+
+  .mode-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 16px;
+    color: var(--txt);
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .mode-btn:hover {
+    border-color: rgba(99, 102, 241, 0.5);
+    background: rgba(99, 102, 241, 0.05);
+  }
+
+  .mode-btn.active {
+    border-color: var(--accent);
+    background: rgba(99, 102, 241, 0.15);
+    box-shadow: 0 0 20px var(--accent-glow);
+  }
+
+  .mode-btn .title {
+    font-weight: 600;
+    font-size: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .mode-btn .count-badge {
+    font-size: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 99px;
+    color: var(--muted);
+  }
+
+  .mode-btn.active .count-badge {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .mode-btn .desc {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* Mistakes Mode Special */
+  .mode-btn.mistakes-btn {
+    grid-column: 1 / -1;
+    border-color: rgba(244, 63, 94, 0.3);
+    background: rgba(244, 63, 94, 0.05);
+  }
+  .mode-btn.mistakes-btn:hover {
+    border-color: var(--bad);
+    background: rgba(244, 63, 94, 0.1);
+  }
+  .mode-btn.mistakes-btn.active {
+    border-color: var(--bad);
+    background: rgba(244, 63, 94, 0.2);
+    box-shadow: 0 0 20px rgba(244, 63, 94, 0.3);
+  }
+  .mode-btn.mistakes-btn .count-badge {
+    background: var(--bad);
+    color: #fff;
+  }
+
+  /* Slider Controls */
+  .slider-box {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+  }
+
+  .slider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .slider-val {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+
+  .preset-btns {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .preset-btn {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    padding: 6px 0;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .preset-btn:hover {
+    color: var(--txt);
+    border-color: var(--accent);
+  }
+
+  .btn-start {
+    width: 100%;
+    padding: 16px;
+    border: 0;
+    border-radius: 16px;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    box-shadow: 0 10px 25px -5px var(--accent-glow);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-start:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px -5px var(--accent-glow);
+    filter: brightness(1.1);
+  }
+
+  /* Quiz View */
+  .badge-container {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .pos-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: rgba(99, 102, 241, 0.15);
+    color: #a5b4fc;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+  }
+
+  .streak-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--amber);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+  }
+
+  .word-display {
+    font-size: clamp(32px, 7vw, 48px);
+    font-weight: 700;
+    text-align: center;
+    margin: 8px 0 6px;
+    letter-spacing: 0.01em;
+    line-height: 1.15;
+  }
+
+  .word-note {
+    text-align: center;
+    color: var(--muted);
+    font-size: 13.5px;
+    min-height: 20px;
+    margin-bottom: 24px;
+  }
+
+  .options-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  @media(max-width: 520px) {
+    .options-grid { grid-template-columns: 1fr; }
+  }
+
+  .opt-btn {
+    position: relative;
+    padding: 16px 18px 16px 48px;
+    font-size: 21px;
+    font-family: inherit;
+    font-weight: 600;
+    color: var(--txt);
+    background: linear-gradient(180deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.8));
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.18s ease;
+  }
+
+  .opt-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px -8px var(--accent-glow);
+  }
+
+  .opt-btn:disabled {
+    cursor: default;
+  }
+
+  .opt-num {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 22px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .hl { color: var(--amber); }
+
+  .opt-btn.correct {
+    background: var(--good-bg);
+    border-color: var(--good);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+  }
+  .opt-btn.correct .hl { color: #6ee7b7; }
+
+  .opt-btn.wrong {
+    background: var(--bad-bg);
+    border-color: var(--bad);
+    animation: shake 0.35s ease-in-out;
+  }
+  .opt-btn.wrong .hl { color: #fca5a5; }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+  }
+
+  .feedback-area {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 15px;
+    min-height: 24px;
+  }
+  .feedback-area .ok { color: var(--good); font-weight: 600; }
+  .feedback-area .err { color: var(--bad); font-weight: 600; }
+
+  /* Finish View */
+  .finish-box {
+    text-align: center;
+    padding: 10px 0;
+  }
+
+  .score-ring {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: conic-gradient(var(--good) calc(var(--acc) * 1%), rgba(255,255,255,0.08) 0);
+    margin: 0 auto 18px;
+    display: grid;
+    place-items: center;
+    position: relative;
+  }
+  .score-ring::before {
+    content: "";
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: var(--bg);
+    position: absolute;
+  }
+  .score-val {
+    position: relative;
+    z-index: 2;
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  .finish-title {
+    font-size: 26px;
+    font-weight: 700;
+    margin: 0 0 8px;
+  }
+
+  .finish-sub {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  .mistakes-list {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 16px;
+    margin: 18px 0;
+    max-height: 220px;
+    overflow-y: auto;
+    text-align: left;
+  }
+
+  .chips-flex {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .chip-item {
+    background: rgba(244, 63, 94, 0.1);
+    border: 1px solid rgba(244, 63, 94, 0.3);
+    padding: 6px 12px;
+    border-radius: 99px;
+    font-size: 14px;
+  }
+
+  .finish-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 24px;
+  }
+
+  .btn-secondary {
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--txt);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    background: rgba(99, 102, 241, 0.1);
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">
+      <span class="dot"></span>
+      <div>
+        <h1>Тренажёр ударений</h1>
+        <p class="sub">Задание 4 ЕГЭ · Орфоэпический список 2026</p>
+      </div>
+    </div>
+    <button class="btn-icon" id="btnMenu" style="display:none;">
+      ⚙️ Настройки
+    </button>
+  </header>
+
+  <!-- Dashboard Stats (visible during quiz) -->
+  <div id="statsBar" class="stats-bar" style="display:none;">
+    <div class="stat-card"><b id="sLearned">0</b><span>выучено</span></div>
+    <div class="stat-card"><b id="sLeft">0</b><span>осталось</span></div>
+    <div class="stat-card"><b id="sAcc">—</b><span>точность</span></div>
+    <div class="stat-card"><b id="sStreak" style="color:var(--amber);">0 🔥</b><span>стрик</span></div>
+  </div>
+
+  <div id="progressWrap" class="progress-wrap" style="display:none;">
+    <div id="progressBar" class="progress-bar"></div>
+  </div>
+
+  <main class="card">
+    <!-- VIEW 1: SETUP SCREEN -->
+    <div id="viewSetup" class="view active">
+      <h2 class="setup-title">Настройка тренировки</h2>
+      <p class="setup-desc">Выберите категорию и количество слов</p>
+
+      <div class="section-label">Выбор режима / части речи</div>
+      <div class="mode-grid" id="modeGrid"></div>
+
+      <div class="slider-box">
+        <div class="slider-header">
+          <span style="font-size:14px; color:var(--muted); font-weight:500;">Количество слов:</span>
+          <span class="slider-val" id="sliderVal">25</span>
+        </div>
+        <input type="range" id="countSlider" min="10" max="219" value="25">
+        <div class="preset-btns">
+          <button class="preset-btn" data-val="10">10</button>
+          <button class="preset-btn" data-val="25">25</button>
+          <button class="preset-btn" data-val="50">50</button>
+          <button class="preset-btn" data-val="100">100</button>
+          <button class="preset-btn" data-val="max">Все</button>
+        </div>
+      </div>
+
+      <button class="btn-start" id="btnStart">Начать тренировку</button>
+    </div>
+
+    <!-- VIEW 2: QUIZ -->
+    <div id="viewQuiz" class="view">
+      <div class="badge-container">
+        <span class="pos-badge" id="posBadge">Глагол</span>
+        <span class="streak-badge" id="streakBadge" style="display:none;">🔥 <span id="streakCount">0</span></span>
+      </div>
+      <div class="word-display" id="wordDisplay">—</div>
+      <div class="word-note" id="wordNote"></div>
+      <div class="options-grid" id="optionsGrid"></div>
+      <div class="feedback-area" id="feedbackArea"></div>
+    </div>
+
+    <!-- VIEW 3: FINISH -->
+    <div id="viewFinish" class="view">
+      <div class="finish-box">
+        <div class="score-ring" id="scoreRing" style="--acc:100">
+          <div class="score-val" id="scoreVal">100%</div>
+        </div>
+        <h2 class="finish-title">Тренировка завершена! 🎉</h2>
+        <p class="finish-sub" id="finishSub"></p>
+
+        <div id="mistakesBox" style="display:none;">
+          <div class="section-label" style="text-align:center;">Ошибки в этой сессии:</div>
+          <div class="mistakes-list">
+            <div class="chips-flex" id="mistakesChips"></div>
+          </div>
+        </div>
+
+        <div class="finish-actions">
+          <button class="btn-start" id="btnFixMistakes" style="display:none; background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);">
+            🎯 Работа над ошибками (<span id="finishMistakesCount">0</span>)
+          </button>
+          <button class="btn-secondary" id="btnRestartSame">Пройти ещё раз с теми же настройками</button>
+          <button class="btn-secondary" id="btnGoMenu">Изменить настройки</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+/* ============================================================
+   БАЗА ДАННЫХ И ЧАСТИ РЕЧИ (ЕГЭ 2026 FIPI)
+   ============================================================ */
+const RAW_DATA = {
+  nouns: {
+    label: "Существительные",
+    items: [
+      "аэропОрты","бАнты","бОроду","бухгАлтеров","вероисповЕдание","водопровОд",
+      "газопровОд","граждАнство","дефИс","дешевИзна","диспансЕр","договорЁнность",
+      "докумЕнт","досУг","еретИк","жалюзИ","знАчимость","Иксы","каталОг","квартАл",
+      "киломЕтр","кОнусов","корЫсть","крАны","кремЕнь","кремнЯ","лЕкторов","лОктя",
+      "локтЕй","лыжнЯ","мЕстностей","намЕрение","нЕдруг","недУг","некролОг",
+      "нЕнависть","нефтепровОд","новостЕй","нОгтя","ногтЕй",
+      {w:"Отзыв", note:"о книге — «отклик, рецензия»"},
+      {w:"отзЫв", note:"посла из страны — действие по глаголу отозвать"},
+      "Отрочество","партЕр","портфЕль","придАное","призЫв","свЁкла","сирОты",
+      "созЫв","сосредотОчение","срЕдства","стАтуя","столЯр","тамОжня","тОрты",
+      "тУфля","цемЕнт","цЕнтнер","цепОчка","шАрфы","шофЁр","экспЕрт"
+    ]
+  },
+  adjectives: {
+    label: "Прилагательные",
+    items: [
+      "вернА","знАчимый","красИвее","красИвейший","кУхонный","ловкА","мозаИчный",
+      "оптОвый","прозорлИвый","прозорлИва","слИвовый"
+    ]
+  },
+  verbs: {
+    label: "Глаголы",
+    items: [
+      "бралА","бралАсь","взялА","взялАсь","влилАсь","ворвалАсь",
+      {w:"воспринЯть", note:"инфинитив"}, {w:"воспринялА", note:"прош. вр., жен. род"},
+      "воссоздалА","вручИт","гналА","гналАсь","добралА","добралАсь",
+      "дождалАсь","дозвонИтся","дозИровать","ждалА","закУпорить",
+      {w:"занЯть", note:"инфинитив"}, {w:"зАнял", note:"прош. вр., муж. род"},
+      {w:"занялА", note:"прош. вр., жен. род"}, {w:"зАняли", note:"прош. вр., мн. ч."},
+      "заперлА","запломбировАть","защемИт","звалА","звонИт",
+      "кАшлянуть","клАла","клЕить","крАлась","кровоточИть","лгалА","лилА","лилАсь",
+      "наделИт","надорвалАсь","назвалАсь","накренИтся","налилА","нарвалА",
+      {w:"начАть", note:"инфинитив"}, {w:"нАчал", note:"прош. вр., муж. род"},
+      {w:"началА", note:"прош. вр., жен. род"}, {w:"нАчали", note:"прош. вр., мн. ч."},
+      "обзвонИт", {w:"облегчИть", note:"инфинитив"}, {w:"облегчИт", note:"3-е лицо, ед. ч."},
+      "облилАсь","обнялАсь","обогналА","ободралА",
+      {w:"ободрИть", note:"инфинитив"}, {w:"ободрИт", note:"3-е лицо, ед. ч."},
+      {w:"ободрИться", note:"инфинитив, возвр."}, {w:"ободрИтся", note:"3-е лицо, ед. ч., возвр."},
+      "обострИть", {w:"одолжИть", note:"инфинитив"}, {w:"одолжИт", note:"3-е лицо, ед. ч."},
+      "озлОбить","оклЕить","окружИт","опОшлить",
+      {w:"освЕдомиться", note:"инфинитив, возвр."}, {w:"освЕдомится", note:"3-е лицо, ед. ч., возвр."},
+      "отбылА","отдалА","откУпорить","отозвалА","отозвалАсь","перезвонИт","перелилА",
+      "плодоносИть","пломбировАть","повторИт","позвалА","позвонИт","полилА",
+      {w:"положИть", note:"инфинитив"}, {w:"положИл", note:"прош. вр., муж. род"},
+      {w:"понЯть", note:"инфинитив"}, {w:"понялА", note:"прош. вр., жен. род"},
+      "послАла", {w:"прибЫть", note:"инфинитив"}, {w:"прИбыл", note:"прош. вр., муж. род"},
+      {w:"прибылА", note:"прош. вр., жен. род"}, {w:"прИбыли", note:"прош. вр., мн. ч."},
+      {w:"принЯть", note:"инфинитив"}, {w:"прИнял", note:"прош. вр., муж. род"},
+      {w:"принялА", note:"прош. вр., жен. род"}, {w:"прИняли", note:"прош. вр., мн. ч."},
+      "рвалА","сверлИт","снялА","создалА","сорвалА","убралА","углубИть","укрепИт",
+      "чЕрпать","щемИт","щЁлкать"
+    ]
+  },
+  participles: {
+    label: "Причастия",
+    items: [
+      "довезЁнный","зАгнутый","зАнятый","занятА","зАпертый","заселЁнный","заселенА",
+      "кровоточАщий","нажИвший","налИвший","нанЯвшийся","начАвший","нАчатый",
+      "низведЁнный","облегчЁнный","ободрЁнный","обострЁнный","отключЁнный",
+      "повторЁнный","поделЁнный","понЯвший","прИнятый","принятА","приручЁнный",
+      "прожИвший","снятА","сОгнутый","углублЁнный"
+    ]
+  },
+  gerunds: {
+    label: "Деепричастия",
+    items: [
+      "закУпорив","начАв","начАвшись","отдАв","понЯв","прибЫв","создАв"
+    ]
+  },
+  adverbs: {
+    label: "Наречия",
+    items: [
+      "вОвремя","дОверху","дОнизу","дОсуха","зАсветло","надОлго","ненадОлго"
+    ]
+  }
+};
+
+/* ============================================================
+   ПАРСИНГ И ИНИЦИАЛИЗАЦИЯ
+   ============================================================ */
+const VOWELS = "аеёиоуыэюя";
+
+function parseWord(raw, posKey, posLabel, noteOverride = "") {
+  const str = typeof raw === "string" ? raw : raw.w;
+  const note = typeof raw === "string" ? noteOverride : (raw.note || noteOverride);
+  
+  let plain = "", stressIdx = -1, stressIsYo = false;
+  for (const ch of str) {
+    if (ch === "Ё") {
+      stressIdx = plain.length;
+      stressIsYo = true;
+      plain += "ё";
+    } else if (ch !== ch.toLowerCase()) {
+      stressIdx = plain.length;
+      plain += ch.toLowerCase();
+    } else {
+      plain += ch;
+    }
+  }
+  return {
+    id: str,
+    raw: str,
+    plain,
+    display: plain.replace(/ё/g, "е"),
+    stressIdx,
+    stressIsYo,
+    posKey,
+    posLabel,
+    note
+  };
+}
+
+const ALL_ITEMS = [];
+const ITEM_MAP = new Map();
+
+for (const [posKey, group] of Object.entries(RAW_DATA)) {
+  for (const entry of group.items) {
+    const item = parseWord(entry, posKey, group.label);
+    ALL_ITEMS.push(item);
+    ITEM_MAP.set(item.id, item);
+  }
+}
+
+/* ============================================================
+   LOCAL STORAGE — БАНК ОШИБОК
+   ============================================================ */
+const STORAGE_KEY_MISTAKES = "stress_trainer_mistakes_v2";
+
+function getSavedMistakes() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_MISTAKES);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+
+function saveMistake(id) {
+  const current = new Set(getSavedMistakes());
+  current.add(id);
+  try {
+    localStorage.setItem(STORAGE_KEY_MISTAKES, JSON.stringify([...current]));
+  } catch(e) {}
+}
+
+function removeMistake(id) {
+  const current = new Set(getSavedMistakes());
+  current.delete(id);
+  try {
+    localStorage.setItem(STORAGE_KEY_MISTAKES, JSON.stringify([...current]));
+  } catch(e) {}
+}
+
+/* ============================================================
+   ХЕЛПЕРЫ ЛОГИКИ
+   ============================================================ */
+function shuffle(a) {
+  const arr = a.slice();
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function vowelPositions(word) {
+  const p = [];
+  for (let i = 0; i < word.length; i++) {
+    if (VOWELS.includes(word[i])) p.push(i);
+  }
+  return p;
+}
+
+function renderWordHtml(item, idx) {
+  const w = item.display;
+  const ch = (idx === item.stressIdx && item.stressIsYo) ? "Ё" : w[idx].toUpperCase();
+  return w.slice(0, idx) + '<b class="hl">' + ch + '</b>' + w.slice(idx + 1);
+}
+
+function buildOptions(item) {
+  const vowels = vowelPositions(item.display);
+  const wrongVowels = shuffle(vowels.filter(p => p !== item.stressIdx));
+  const picked = wrongVowels.slice(0, Math.min(3, wrongVowels.length));
+  const all = shuffle([item.stressIdx, ...picked]);
+  return all.map(idx => ({
+    idx,
+    ok: idx === item.stressIdx,
+    html: renderWordHtml(item, idx)
+  }));
+}
+
+/* ============================================================
+   СОСТОЯНИЕ ПРИЛОЖЕНИЯ
+   ============================================================ */
+let currentMode = "all"; // "all", posKey, or "mistakes"
+let targetCount = 25;
+
+let queue = [];
+let totalQuestions = 0;
+let learnedCount = 0;
+let attemptCount = 0;
+let correctCount = 0;
+let currentStreak = 0;
+
+let sessionMistakes = new Set();
+let currentItem = null;
+let currentOptions = [];
+let isLocked = false;
+
+/* ============================================================
+   UI ЭЛЕМЕНТЫ
+   ============================================================ */
+const viewSetup = document.getElementById("viewSetup");
+const viewQuiz = document.getElementById("viewQuiz");
+const viewFinish = document.getElementById("viewFinish");
+
+const statsBar = document.getElementById("statsBar");
+const progressWrap = document.getElementById("progressWrap");
+const progressBar = document.getElementById("progressBar");
+const btnMenu = document.getElementById("btnMenu");
+
+const modeGrid = document.getElementById("modeGrid");
+const countSlider = document.getElementById("countSlider");
+const sliderVal = document.getElementById("sliderVal");
+
+/* ============================================================
+   ИНИЦИАЛИЗАЦИЯ НАСТРОЕК (SETUP)
+   ============================================================ */
+function renderSetupModes() {
+  const savedMistakes = getSavedMistakes();
+  modeGrid.innerHTML = "";
+
+  // 1. Mode "All"
+  const allBtn = createModeBtn("all", "Все слова", ALL_ITEMS.length, "Вся база орфоэпического списка");
+  modeGrid.appendChild(allBtn);
+
+  // 2. Mode "Mistakes" (if any exist)
+  if (savedMistakes.length > 0) {
+    const mistBtn = createModeBtn("mistakes", "🎯 Работа над ошибками", savedMistakes.length, "Слова, где раньше были ошибки", true);
+    modeGrid.appendChild(mistBtn);
+  }
+
+  // 3. Parts of speech
+  for (const [key, group] of Object.entries(RAW_DATA)) {
+    const btn = createModeBtn(key, group.label, group.items.length, "Отработка определенной части речи");
+    modeGrid.appendChild(btn);
+  }
+
+  updateSliderMax();
+}
+
+function createModeBtn(modeKey, title, count, desc, isMistake = false) {
+  const btn = document.createElement("div");
+  btn.className = "mode-btn" + (isMistake ? " mistakes-btn" : "") + (currentMode === modeKey ? " active" : "");
+  btn.innerHTML = `
+    <div class="title">
+      <span>${title}</span>
+      <span class="count-badge">${count}</span>
+    </div>
+    <div class="desc">${desc}</div>
+  `;
+  btn.onclick = () => {
+    currentMode = modeKey;
+    document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    updateSliderMax();
+  };
+  return btn;
+}
+
+function getAvailablePool() {
+  if (currentMode === "all") return ALL_ITEMS;
+  if (currentMode === "mistakes") {
+    const saved = getSavedMistakes();
+    return saved.map(id => ITEM_MAP.get(id)).filter(Boolean);
+  }
+  return ALL_ITEMS.filter(item => item.posKey === currentMode);
+}
+
+function updateSliderMax() {
+  const pool = getAvailablePool();
+  const max = pool.length;
+  countSlider.max = max;
+  countSlider.min = Math.min(10, max);
+  
+  if (parseInt(countSlider.value, 10) > max || countSlider.value === countSlider.max) {
+    countSlider.value = max;
+  }
+  sliderVal.textContent = countSlider.value;
+  targetCount = parseInt(countSlider.value, 10);
+}
+
+countSlider.oninput = () => {
+  sliderVal.textContent = countSlider.value;
+  targetCount = parseInt(countSlider.value, 10);
+};
+
+document.querySelectorAll(".preset-btn").forEach(btn => {
+  btn.onclick = () => {
+    const val = btn.dataset.val;
+    const pool = getAvailablePool();
+    if (val === "max") {
+      countSlider.value = pool.length;
+    } else {
+      countSlider.value = Math.min(parseInt(val, 10), pool.length);
+    }
+    sliderVal.textContent = countSlider.value;
+    targetCount = parseInt(countSlider.value, 10);
+  };
+});
+
+/* ============================================================
+   ЗАПУСК ТРЕНИРОВКИ
+   ============================================================ */
+function startQuiz() {
+  const pool = shuffle(getAvailablePool());
+  queue = pool.slice(0, targetCount);
+  totalQuestions = queue.length;
+  
+  learnedCount = 0;
+  attemptCount = 0;
+  correctCount = 0;
+  currentStreak = 0;
+  sessionMistakes.clear();
+
+  switchView(viewQuiz);
+  statsBar.style.display = "grid";
+  progressWrap.style.display = "block";
+  btnMenu.style.display = "flex";
+
+  nextQuestion();
+}
+
+function nextQuestion() {
+  isLocked = false;
+  if (queue.length === 0) {
+    finishQuiz();
+    return;
+  }
+
+  currentItem = queue.shift();
+  currentOptions = buildOptions(currentItem);
+  renderQuizCard();
+}
+
+function renderQuizCard() {
+  document.getElementById("posBadge").textContent = currentItem.posLabel;
+  document.getElementById("wordDisplay").textContent = currentItem.display;
+  document.getElementById("wordNote").textContent = currentItem.note || "";
+
+  const streakBadge = document.getElementById("streakBadge");
+  if (currentStreak >= 3) {
+    streakBadge.style.display = "inline-flex";
+    document.getElementById("streakCount").textContent = currentStreak;
+  } else {
+    streakBadge.style.display = "none";
+  }
+
+  const grid = document.getElementById("optionsGrid");
+  grid.innerHTML = "";
+
+  currentOptions.forEach((opt, idx) => {
+    const btn = document.createElement("button");
+    btn.className = "opt-btn";
+    btn.innerHTML = `<span class="opt-num">${idx + 1}</span>${opt.html}`;
+    if (opt.ok) btn.dataset.correct = "1";
+    btn.onclick = () => processAnswer(opt, btn);
+    grid.appendChild(btn);
+  });
+
+  document.getElementById("feedbackArea").innerHTML = "";
+  updateStats();
+}
+
+function processAnswer(opt, btn) {
+  if (isLocked) return;
+  isLocked = true;
+  attemptCount++;
+
+  const allBtns = document.querySelectorAll(".opt-btn");
+  allBtns.forEach(b => b.disabled = true);
+
+  const feedback = document.getElementById("feedbackArea");
+
+  if (opt.ok) {
+    correctCount++;
+    learnedCount++;
+    currentStreak++;
+    btn.classList.add("correct");
+    feedback.innerHTML = '<span class="ok">Отлично! Верно!</span>';
+
+    // If practicing saved mistakes, remove when answered right
+    if (currentMode === "mistakes") {
+      removeMistake(currentItem.id);
+    }
+
+    updateStats();
+    setTimeout(nextQuestion, 550);
+  } else {
+    currentStreak = 0;
+    sessionMistakes.add(currentItem);
+    saveMistake(currentItem.id);
+
+    btn.classList.add("wrong");
+    allBtns.forEach(b => {
+      if (b.dataset.correct === "1") b.classList.add("correct");
+    });
+
+    const correctOpt = currentOptions.find(o => o.ok);
+    feedback.innerHTML = `<span class="err">Неверно.</span> Правильно: <b>${correctOpt.html}</b>`;
+
+    // Re-insert into queue spaced repetition (3 to 6 steps later)
+    const reInsertIndex = Math.min(queue.length, 3 + Math.floor(Math.random() * 4));
+    queue.splice(reInsertIndex, 0, currentItem);
+
+    updateStats();
+    setTimeout(nextQuestion, 1600);
+  }
+}
+
+function updateStats() {
+  const left = totalQuestions - learnedCount;
+  document.getElementById("sLearned").textContent = learnedCount;
+  document.getElementById("sLeft").textContent = left;
+  
+  const acc = attemptCount ? Math.round((correctCount / attemptCount) * 100) : 100;
+  document.getElementById("sAcc").textContent = attemptCount ? acc + "%" : "—";
+  document.getElementById("sStreak").textContent = currentStreak + " 🔥";
+
+  const pct = totalQuestions ? (learnedCount / totalQuestions) * 100 : 0;
+  progressBar.style.width = pct + "%";
+}
+
+/* ============================================================
+   ИТОГИ СЕССИИ (FINISH)
+   ============================================================ */
+function finishQuiz() {
+  const acc = attemptCount ? Math.round((correctCount / attemptCount) * 100) : 100;
+  
+  document.getElementById("scoreRing").style.setProperty("--acc", acc);
+  document.getElementById("scoreVal").textContent = acc + "%";
+  document.getElementById("finishSub").textContent = `Отработано слов: ${totalQuestions} · Всего ответов: ${attemptCount}`;
+
+  const mistakesBox = document.getElementById("mistakesBox");
+  const mistakesChips = document.getElementById("mistakesChips");
+  const btnFixMistakes = document.getElementById("btnFixMistakes");
+
+  if (sessionMistakes.size > 0) {
+    mistakesBox.style.display = "block";
+    mistakesChips.innerHTML = [...sessionMistakes].map(item => 
+      `<span class="chip-item">${renderWordHtml(item, item.stressIdx)}</span>`
+    ).join("");
+
+    btnFixMistakes.style.display = "block";
+    document.getElementById("finishMistakesCount").textContent = sessionMistakes.size;
+  } else {
+    mistakesBox.style.display = "none";
+    btnFixMistakes.style.display = "none";
+  }
+
+  statsBar.style.display = "none";
+  progressWrap.style.display = "none";
+  switchView(viewFinish);
+}
+
+/* ============================================================
+   ПЕРЕКЛЮЧЕНИЕ ЭКРАНОВ И СОБЫТИЯ
+   ============================================================ */
+function switchView(target) {
+  [viewSetup, viewQuiz, viewFinish].forEach(v => v.classList.remove("active"));
+  target.classList.add("active");
+}
+
+document.getElementById("btnStart").onclick = startQuiz;
+
+btnMenu.onclick = () => {
+  if (confirm("Вернуться в настройки? Прогресс текущей тренировки будет сброшен.")) {
+    renderSetupModes();
+    statsBar.style.display = "none";
+    progressWrap.style.display = "none";
+    btnMenu.style.display = "none";
+    switchView(viewSetup);
+  }
+};
+
+document.getElementById("btnRestartSame").onclick = startQuiz;
+
+document.getElementById("btnGoMenu").onclick = () => {
+  renderSetupModes();
+  btnMenu.style.display = "none";
+  switchView(viewSetup);
+};
+
+document.getElementById("btnFixMistakes").onclick = () => {
+  currentMode = "mistakes";
+  renderSetupModes();
+  startQuiz();
+};
+
+/* Keyboard Controls */
+document.addEventListener("keydown", e => {
+  if (isLocked || !viewQuiz.classList.contains("active")) return;
+  const num = parseInt(e.key, 10);
+  if (num >= 1 && num <= 4) {
+    const btns = document.querySelectorAll(".opt-btn");
+    if (btns[num - 1]) btns[num - 1].click();
+  }
+});
+
+// Initial Setup Render
+renderSetupModes();
+</script>
+</body>
+</html>
